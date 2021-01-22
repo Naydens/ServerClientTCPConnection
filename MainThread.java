@@ -7,30 +7,17 @@ import java.net.Socket;
 
 public class MainThread {
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(8080);
+        ServerSocket serverSocket = new ServerSocket(8081);
         while (true) {
             System.out.println("wait connection....");
+            Socket socket = serverSocket.accept(); // на каждое принятое соединение создается поток
+            MyRunnableClass myRunnableClass = new MyRunnableClass(socket);
+            Thread ioThread = new Thread(myRunnableClass);//как только оно обработано поток убивается, постоянно выделяю ресурс у ОС и возвращаю
+            ioThread.start();// PoolThread позволяет этого избежать
 
-            Socket socket = serverSocket.accept();
-            String fileName = reader(socket.getInputStream());
-
-            MyRunnableClass myRunnableClass = new MyRunnableClass(fileName);
-
-            Thread ioThread = new Thread(myRunnableClass);
-            ioThread.start();
             System.out.println("main thread");
-
-
         }
     }
 
-    public static String reader(InputStream stream) throws IOException {
-        int i;
-        StringBuilder sb = new StringBuilder();
-        while ((i = stream.read()) != -1) {
-            sb.append((char) i);
-        }
 
-        return sb.toString();
-    }
 }
