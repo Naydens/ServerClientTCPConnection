@@ -1,7 +1,6 @@
 package TZ;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -14,7 +13,6 @@ public class MainThread {
             MyRunnableClass myRunnableClass = new MyRunnableClass(socket);
             Thread ioThread = new Thread(myRunnableClass);//как только оно обработано поток убивается, постоянно выделяю ресурс у ОС и возвращаю
             ioThread.start();// PoolThread позволяет этого избежать
-
             System.out.println("main thread");
         }
     }
