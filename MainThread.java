@@ -6,7 +6,7 @@ import java.net.Socket;
 
 public class MainThread {
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(8081);
+        ServerSocket serverSocket = new ServerSocket(8085);
         while (true) {
             System.out.println("wait connection....");
             Socket socket = serverSocket.accept(); // на каждое принятое соединение создается поток
@@ -19,3 +19,4 @@ public class MainThread {
 
 
 }
+

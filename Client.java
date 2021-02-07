@@ -15,7 +15,7 @@ public class Client {
                 "\n path MUST TO be separate \\*2 " +
                 "\n in the end enter !");
         String info = scanner.nextLine();
-        Socket socket = new Socket("127.0.0.1", 8081);
+        Socket socket = new Socket("127.0.0.1", 8085);
         OutputStream outputStream = socket.getOutputStream();
 
         byte[] arrBytes = info.getBytes();
@@ -38,12 +38,12 @@ public class Client {
                 outputStream.write(arrAnswer);
                 outputStream.flush();
                 byte[] buffer = new byte[1024];
-                String s ="";
-
+                String s = "";
                 int neededByte;
                 while ((neededByte = inputStream.read(buffer)) != -1) {
-                    System.out.println(s+new String(buffer));
+                    s += new String(buffer);
                 }
+                System.out.println(s);
 
                 break;
             case "no":
@@ -54,6 +54,7 @@ public class Client {
         socket.close();
 
     }
+
     private static String convertToStringBytes(InputStream stream) throws IOException {
         int i;
         StringBuilder sb = new StringBuilder();
