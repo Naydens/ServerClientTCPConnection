@@ -1,6 +1,7 @@
 package TZ;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,59 +10,99 @@ import java.util.Scanner;
 
 public class Client {
     public static void main(String[] args) throws Exception {
-        Scanner scanner = new Scanner(System.in);
+        File download = new File("C:\\Users\\1\\Desktop\\clientDownload");
+        File file = new File("C:\\Users\\1\\Desktop\\file'sTree");
 
-        System.out.println("enter file's name and path separated \",\". " +
-                "\n path MUST TO be separate \\*2 " +
-                "\n in the end enter !");
-        String info = scanner.nextLine();
+        Scanner scanner = new Scanner(System.in);
         Socket socket = new Socket("127.0.0.1", 8085);
         OutputStream outputStream = socket.getOutputStream();
-
-        byte[] arrBytes = info.getBytes();
-        //transmit bytes (file's name) on a TCP connection
-        outputStream.write(arrBytes);
-        //ask Igor about flush
-        outputStream.flush();
-
         InputStream inputStream = socket.getInputStream();
-        String answerFind = convertToStringBytes(inputStream);
-        System.out.println(answerFind);
 
-        System.out.println("\n do you want to download file?\n " +
-                "yes ; no ?");
-        String answer = scanner.nextLine();
+        System.out.println("enter file's name and path separated \"/\". " +
+                "\n path MUST TO be separate / " +
+                "\n in the end enter ! \n File name mustn't have next symbols " +
+                "*  / < > ? \\ | \" \n" +
+                "For enter input 0");
 
-        switch (answer) {
-            case "yes":
-                byte[] arrAnswer = answer.getBytes();
-                outputStream.write(arrAnswer);
-                outputStream.flush();
-                byte[] buffer = new byte[1024];
-                String s = "";
-                int neededByte;
-                while ((neededByte = inputStream.read(buffer)) != -1) {
-                    s += new String(buffer);
-                }
-                System.out.println(s);
+        String info = scanner.nextLine();
 
-                break;
-            case "no":
-                break;
+        if (info.toCharArray()[0] == Constants.notInputNameConst) {
+            System.out.println("exit");
+        } else {
+            String[] arrInfo = info.split("/");
+            String name = arrInfo[0];
+            try {
+                checkFileNameSideClient(name);
+                HandlerClasses.write(outputStream, info.getBytes());
+                System.out.println("start to run");
+//                    int i;
+//                    while ((i = inputStream.read()) != -1){
+//                        System.out.println(i);
+//                    }
+
+//                    int checkFileNameServerSide;
+//                    while ((checkFileNameServerSide = inputStream.read()) != -1) {
+//
+//                        if (checkFileNameServerSide == Constants.notInputNameConst) {
+//                            throw new DidnotInputFileNameException();
+//                        }
+//                        if (checkFileNameServerSide == Constants.wrongNameConst) {
+//                            throw new WrongNameException();
+//                        } else {
+//                            System.out.println("download file, file will download here \n " +
+//                                    "C:\\Users\\1\\Desktop\\file'sTree ? \n" +
+//                                    "yes input 1, no input 0");
+//                            int answer = scanner.nextInt();
+//                            switch (answer) {
+//                                case 0:
+//                                    break;
+//                                case 1:
+//
+//                            }
+//                        }
+//                    }
+
+
+            } catch (DidnotInputFileNameException e) {
+                System.out.println(e.toString());
+
+            } catch (WrongNameException e) {
+                System.out.println(e.toString());
+                System.out.println(e.getWrongChars());
+
+            } catch (IOException e) {
+                e.getMessage();
+            }
         }
+    }
+
+//            showStructure(new File("C:\\Users\\1\\Desktop\\file'sTree"));
+//        socket.close();
 
 
-        socket.close();
+    private static void checkFileNameSideClient(String name) throws DidnotInputFileNameException, WrongNameException {
+        char[] arrChars = name.toCharArray();
+        if (arrChars.length == 0) {
+            throw new DidnotInputFileNameException();
+        }
+        for (int i = 0; i < arrChars.length; i++) {
+            if (arrChars[i] == 42 || arrChars[i] == 48 || arrChars[i] == 60
+                    || arrChars[i] == 62 || arrChars[i] == 63 || arrChars[i] == 92 || arrChars[i] == 124
+                    || arrChars[i] == 171 || arrChars[i] == 187) {
+                throw new WrongNameException();
+            }
+        }
 
     }
 
-    private static String convertToStringBytes(InputStream stream) throws IOException {
-        int i;
-        StringBuilder sb = new StringBuilder();
-        while ((i = stream.read()) != 33) {
-            sb.append((char) i);
+
+    public static void showStructure(File folder) {
+        for (File elem : folder.listFiles()) {
+            System.out.println(elem);
+            if (elem.isDirectory()) {
+                showStructure(elem);
+            }
         }
-        return sb.toString();
     }
 
 
