@@ -1,5 +1,7 @@
 package TZ;
 
+import java.util.regex.Pattern;
+
 public class Constants {
     public static final int convertToStringConst = 33;
     public static final int getAnswerConst = 121;
@@ -8,4 +10,5 @@ public class Constants {
     public static final int wrongNameConst = 49;
     public static final int okNameConst = 50;
     public static final String mainRootConst = "C:\\Users\\1\\Desktop\\file'sTree\\";
+    public static final String patternCheckFileNameConst = "[<>:\"/\\|?*]";
 }

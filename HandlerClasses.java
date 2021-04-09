@@ -49,7 +49,7 @@ public class HandlerClasses {
     // So by having two calls in the code above, the directory could be empty when the second call executes, even when it was not at the time the first call hits.
     // (Also, listFiles() will return null if the given path is not a directory.)
     public static String fileSearch(String name, File root) {
-        File file = new File(root + name);
+        File file = new File(root+"\\" + name);
         if (file.exists()) {
             return "File was found";
         }

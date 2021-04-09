@@ -7,16 +7,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Client {
     public static void main(String[] args) throws Exception {
         File download = new File("C:\\Users\\1\\Desktop\\clientDownload");
         File file = new File("C:\\Users\\1\\Desktop\\file'sTree");
+        showStructure(file);
+        System.out.println(checkFileNameSideClientRegex(""));
 
         Scanner scanner = new Scanner(System.in);
-        Socket socket = new Socket("127.0.0.1", 8085);
-        OutputStream outputStream = socket.getOutputStream();
-        InputStream inputStream = socket.getInputStream();
+//        Socket socket = new Socket("127.0.0.1", 8085);
+//        OutputStream outputStream = socket.getOutputStream();
+//        InputStream inputStream = socket.getInputStream();
 
         System.out.println("enter file's name and path separated \"/\". " +
                 "\n path MUST TO be separate / " +
@@ -26,18 +30,19 @@ public class Client {
 
         String info = scanner.nextLine();
 
-        if (info.toCharArray()[0] == Constants.notInputNameConst) {
-            System.out.println("exit");
-        } else {
-            String[] arrInfo = info.split("/");
-            String name = arrInfo[0];
-            try {
-                checkFileNameSideClient(name);
-                HandlerClasses.write(outputStream, info.getBytes());
-                System.out.println("start to run");
+//        if (info.toCharArray()[0] == Constants.notInputNameConst) {
+//            System.out.println("exit");
+//        } else {
+//            String[] arrInfo = info.split("/");
+//            String name = arrInfo[0];
+//            try {
+//                checkFileNameSideClient(name);
+//                HandlerClasses.write(outputStream, info.getBytes());
+//                System.out.println("start to run");
+//
 //                    int i;
 //                    while ((i = inputStream.read()) != -1){
-//                        System.out.println(i);
+//                        System.out.print((char) i);
 //                    }
 
 //                    int checkFileNameServerSide;
@@ -63,17 +68,17 @@ public class Client {
 //                    }
 
 
-            } catch (DidnotInputFileNameException e) {
-                System.out.println(e.toString());
-
-            } catch (WrongNameException e) {
-                System.out.println(e.toString());
-                System.out.println(e.getWrongChars());
-
-            } catch (IOException e) {
-                e.getMessage();
-            }
-        }
+//            } catch (DidnotInputFileNameException e) {
+//                System.out.println(e.toString());
+//
+//            } catch (WrongNameException e) {
+//                System.out.println(e.toString());
+//                System.out.println(e.getWrongChars());
+//
+//            } catch (IOException e) {
+//                e.getMessage();
+//            }
+//        }
     }
 
 //            showStructure(new File("C:\\Users\\1\\Desktop\\file'sTree"));
@@ -95,15 +100,39 @@ public class Client {
 
     }
 
+    private static boolean checkFileNameSideClientRegex(String name)throws DidnotInputFileNameException, WrongNameException{
+        if (name.length()==0){
+            throw new DidnotInputFileNameException();
+        }
 
-    public static void showStructure(File folder) {
-        for (File elem : folder.listFiles()) {
-            System.out.println(elem);
-            if (elem.isDirectory()) {
-                showStructure(elem);
-            }
+        String regex = Constants.patternCheckFileNameConst;
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(name);
+
+        if (matcher.find()){
+            throw new WrongNameException();
+        }
+        else {
+            return true;
         }
     }
+
+
+    public static void showStructure(File folder) {
+
+        String [] str = folder.list();
+        for (int i=0;i<str.length;i++){
+            System.out.println(str[i]);
+        }
+//        for (File elem : folder.listFiles()) {
+////            System.out.println(elem);
+//            if (elem.isDirectory()) {
+//                showStructure(elem);
+//            }
+//        }
+    }
+
+
 
 
 }
