@@ -12,116 +12,79 @@ import java.util.regex.Pattern;
 
 public class Client {
     public static void main(String[] args) throws Exception {
-        File download = new File("C:\\Users\\1\\Desktop\\clientDownload");
-        File file = new File("C:\\Users\\1\\Desktop\\file'sTree");
-        showStructure(file);
-        System.out.println(checkFileNameSideClientRegex(""));
 
         Scanner scanner = new Scanner(System.in);
-//        Socket socket = new Socket("127.0.0.1", 8085);
-//        OutputStream outputStream = socket.getOutputStream();
-//        InputStream inputStream = socket.getInputStream();
+        Socket socket = new Socket("127.0.0.1", 8085);
+        OutputStream outputStream = socket.getOutputStream();
+        InputStream inputStream = socket.getInputStream();
+        boolean exit = true;
+        while (exit) {
+            System.out.println("enter file's name and path separated \"/\". " +
+                    "\n path MUST TO be separate / " +
+                    "\n in the end enter ! \n File name mustn't have next symbols " +
+                    "*  / < > ? \\ | \" \n" +
+                    "For exit input 9");
 
-        System.out.println("enter file's name and path separated \"/\". " +
-                "\n path MUST TO be separate / " +
-                "\n in the end enter ! \n File name mustn't have next symbols " +
-                "*  / < > ? \\ | \" \n" +
-                "For enter input 0");
+            String info = scanner.nextLine();
 
-        String info = scanner.nextLine();
+            if (info.toCharArray()[0] == Constants.exitConst) {
+                System.out.println("Good Bay");
+                exit = false;
 
-//        if (info.toCharArray()[0] == Constants.notInputNameConst) {
-//            System.out.println("exit");
-//        } else {
-//            String[] arrInfo = info.split("/");
-//            String name = arrInfo[0];
-//            try {
-//                checkFileNameSideClient(name);
-//                HandlerClasses.write(outputStream, info.getBytes());
-//                System.out.println("start to run");
-//
-//                    int i;
-//                    while ((i = inputStream.read()) != -1){
-//                        System.out.print((char) i);
-//                    }
+            } else {
+                String[] arrInfo = info.split("/");
+                String name = arrInfo[0];
+                try {
+                    if (HandlerClasses.checkFileNameSideClientRegex(name)) {
+                        HandlerClasses.write(outputStream, info.getBytes());
+                    }
+                    String answerSearchFileOnServer = HandlerClasses.convertToStringBytes(inputStream);
+                    if (answerSearchFileOnServer.equalsIgnoreCase(Constants.foundFileConst)) {
+                        System.out.println("file was found, do you want to download file? want input - " + (char)Constants.downloadFileConst +
+                                "otherwise - " + (char)Constants.notDownloadFileConst);
 
-//                    int checkFileNameServerSide;
-//                    while ((checkFileNameServerSide = inputStream.read()) != -1) {
-//
-//                        if (checkFileNameServerSide == Constants.notInputNameConst) {
-//                            throw new DidnotInputFileNameException();
-//                        }
-//                        if (checkFileNameServerSide == Constants.wrongNameConst) {
-//                            throw new WrongNameException();
-//                        } else {
-//                            System.out.println("download file, file will download here \n " +
-//                                    "C:\\Users\\1\\Desktop\\file'sTree ? \n" +
-//                                    "yes input 1, no input 0");
-//                            int answer = scanner.nextInt();
-//                            switch (answer) {
-//                                case 0:
-//                                    break;
-//                                case 1:
-//
-//                            }
-//                        }
-//                    }
+                        int answer = scanner.nextInt();
+                        switch (answer) {
+                            case Constants.downloadFileConst:
+                                System.out.println("path to file " +
+                                        "\n" + Constants.pathToFolderClient);
+                                HandlerClasses.write(outputStream, info.getBytes());
+                        }
+                    }
+                    else {
+                        System.out.println("file wasn't find, do you want to continue? " +
+                                "\n yes - press \"enter\" " +
+                                "\n no - " +(char)Constants.exitConst);
+                        int answer = scanner.nextInt();
+                        switch (answer){
+                            case Constants.
+                        }
+                        exit=false;
+                    }
 
+                } catch (DidnotInputFileNameException e) {
+                    System.out.println(e.toString() + "\n try again");
+                    continue;
 
-//            } catch (DidnotInputFileNameException e) {
-//                System.out.println(e.toString());
-//
-//            } catch (WrongNameException e) {
-//                System.out.println(e.toString());
-//                System.out.println(e.getWrongChars());
-//
-//            } catch (IOException e) {
-//                e.getMessage();
-//            }
-//        }
-    }
-
-//            showStructure(new File("C:\\Users\\1\\Desktop\\file'sTree"));
-//        socket.close();
-
-
-    private static void checkFileNameSideClient(String name) throws DidnotInputFileNameException, WrongNameException {
-        char[] arrChars = name.toCharArray();
-        if (arrChars.length == 0) {
-            throw new DidnotInputFileNameException();
-        }
-        for (int i = 0; i < arrChars.length; i++) {
-            if (arrChars[i] == 42 || arrChars[i] == 48 || arrChars[i] == 60
-                    || arrChars[i] == 62 || arrChars[i] == 63 || arrChars[i] == 92 || arrChars[i] == 124
-                    || arrChars[i] == 171 || arrChars[i] == 187) {
-                throw new WrongNameException();
+                } catch (WrongNameException e) {
+                    System.out.println(e.toString() + "\n" + e.getWrongChars() + "\n try again");
+                    continue;
+                } catch (IOException e) {
+                    e.getMessage();
+                    break;
+                }
             }
         }
-
     }
 
-    private static boolean checkFileNameSideClientRegex(String name)throws DidnotInputFileNameException, WrongNameException{
-        if (name.length()==0){
-            throw new DidnotInputFileNameException();
-        }
 
-        String regex = Constants.patternCheckFileNameConst;
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(name);
-
-        if (matcher.find()){
-            throw new WrongNameException();
-        }
-        else {
-            return true;
-        }
-    }
+//        socket.close();
 
 
     public static void showStructure(File folder) {
 
-        String [] str = folder.list();
-        for (int i=0;i<str.length;i++){
+        String[] str = folder.list();
+        for (int i = 0; i < str.length; i++) {
             System.out.println(str[i]);
         }
 //        for (File elem : folder.listFiles()) {
@@ -131,8 +94,6 @@ public class Client {
 //            }
 //        }
     }
-
-
 
 
 }
